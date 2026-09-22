@@ -16,6 +16,126 @@
       "actual_result": "home_win",
       "correct": true,
       "scored_at": "2026-09-22T17:43:14.251Z"
+    },
+    "md6-arsenal-fc-leeds-united-fc": {
+      "matchday": 6,
+      "date": "2026-10-10",
+      "home": "Arsenal FC",
+      "away": "Leeds United FC",
+      "predicted_result": "home_win",
+      "predicted_score": "2-0",
+      "home_form": "WWWWL",
+      "away_form": "WDDWD",
+      "reasoning": "Arsenal have won four of five (only slip 0-3 at Brighton) and are rested; Leeds are unbeaten-ish but draw-heavy (three draws in five) and offer little away threat.",
+      "predicted_at": "2026-09-22T18:09:43.170Z"
+    },
+    "md6-sunderland-afc-brighton-amp-hove-albion-fc": {
+      "matchday": 6,
+      "date": "2026-10-10",
+      "home": "Sunderland AFC",
+      "away": "Brighton &amp; Hove Albion FC",
+      "predicted_result": "away_win",
+      "predicted_score": "1-2",
+      "home_form": "LWDLL",
+      "away_form": "WLDWW",
+      "reasoning": "Brighton come in on back-to-back wins including 3-0 over Arsenal; Sunderland have lost three of their last four and shipped five at Man City.",
+      "predicted_at": "2026-09-22T18:09:43.173Z"
+    },
+    "md6-chelsea-fc-afc-bournemouth": {
+      "matchday": 6,
+      "date": "2026-10-10",
+      "home": "Chelsea FC",
+      "away": "AFC Bournemouth",
+      "predicted_result": "home_win",
+      "predicted_score": "2-1",
+      "home_form": "WWLDL",
+      "away_form": "LDDDL",
+      "reasoning": "Chelsea are patchy after a 3-0 loss at Brentford but score freely at home (4-3 v Brighton, 2-1 v Arsenal); Bournemouth are winless in five with three draws.",
+      "predicted_at": "2026-09-22T18:09:43.175Z"
+    },
+    "md6-ipswich-town-fc-fulham-fc": {
+      "matchday": 6,
+      "date": "2026-10-10",
+      "home": "Ipswich Town FC",
+      "away": "Fulham FC",
+      "predicted_result": "home_win",
+      "predicted_score": "2-1",
+      "home_form": "WLLWL",
+      "away_form": "LLLDD",
+      "reasoning": "Ipswich have two wins in five including 1-0 at Everton, while Fulham are winless in five (three losses, two draws) and have kept just one clean sheet.",
+      "predicted_at": "2026-09-22T18:09:43.176Z"
+    },
+    "md6-aston-villa-fc-brentford-fc": {
+      "matchday": 6,
+      "date": "2026-10-10",
+      "home": "Aston Villa FC",
+      "away": "Brentford FC",
+      "predicted_result": "draw",
+      "predicted_score": "1-1",
+      "home_form": "LLDLW",
+      "away_form": "WDDDW",
+      "reasoning": "Brentford are unbeaten in five but drew all three of their most recent away/neutral outings; Villa have only just found a win (3-2 at Spurs) after a bad run.",
+      "predicted_at": "2026-09-22T18:09:43.178Z"
+    },
+    "md6-manchester-united-fc-tottenham-hotspur-fc": {
+      "matchday": 6,
+      "date": "2026-10-10",
+      "home": "Manchester United FC",
+      "away": "Tottenham Hotspur FC",
+      "predicted_result": "home_win",
+      "predicted_score": "2-1",
+      "home_form": "LWDLD",
+      "away_form": "LLDDL",
+      "reasoning": "United are inconsistent but scored five at home against Ipswich; Spurs are winless in five with three goals total and just lost at home to Villa.",
+      "predicted_at": "2026-09-22T18:09:43.180Z"
+    },
+    "md6-hull-city-afc-everton-fc": {
+      "matchday": 6,
+      "date": "2026-10-11",
+      "home": "Hull City AFC",
+      "away": "Everton FC",
+      "predicted_result": "draw",
+      "predicted_score": "1-1",
+      "home_form": "WWDDL",
+      "away_form": "WDDDW",
+      "reasoning": "Hull are tough at home (2-0 v Man Utd, 0-0 v Villa) and Everton are unbeaten in five but have drawn three; low-scoring stalemate looks likeliest.",
+      "predicted_at": "2026-09-22T18:09:43.181Z"
+    },
+    "md6-crystal-palace-fc-nottingham-forest-fc": {
+      "matchday": 6,
+      "date": "2026-10-11",
+      "home": "Crystal Palace FC",
+      "away": "Nottingham Forest FC",
+      "predicted_result": "draw",
+      "predicted_score": "1-1",
+      "home_form": "LLWLD",
+      "away_form": "LDDWL",
+      "reasoning": "Palace leak goals at home (1-4 v City, 2-3 v Ipswich) but just kept a 0-0 at Leeds; Forest are similarly muddled and have scored three in five.",
+      "predicted_at": "2026-09-22T18:09:43.183Z"
+    },
+    "md6-liverpool-fc-manchester-city-fc": {
+      "matchday": 6,
+      "date": "2026-10-11",
+      "home": "Liverpool FC",
+      "away": "Manchester City FC",
+      "predicted_result": "away_win",
+      "predicted_score": "1-2",
+      "home_form": "DDWDW",
+      "away_form": "WWWWW",
+      "reasoning": "City have won all five including 5-3 over Sunderland and 1-0 at Old Trafford; Liverpool are unbeaten but blunt at home (2-2, 0-0) with three draws in five.",
+      "predicted_at": "2026-09-22T18:09:43.185Z"
+    },
+    "md6-coventry-city-fc-newcastle-united-fc": {
+      "matchday": 6,
+      "date": "2026-10-12",
+      "home": "Coventry City FC",
+      "away": "Newcastle United FC",
+      "predicted_result": "away_win",
+      "predicted_score": "1-2",
+      "home_form": "LLLLW",
+      "away_form": "DWDLW",
+      "reasoning": "Coventry lost four straight (including 0-5 at home to Brighton) before winning at Forest; Newcastle have won two of their last three and are rested.",
+      "predicted_at": "2026-09-22T18:09:43.187Z"
     }
   }
 }
