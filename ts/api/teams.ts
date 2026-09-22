@@ -66,6 +66,7 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
         const opponent = isHome ? fixture.awayTeam.name : fixture.homeTeam.name;
         const key = fixtureKey(md, fixture.homeTeam.name, fixture.awayTeam.name);
         const prediction = season.fixtures[key] ?? null;
+        const form = prediction ? (isHome ? prediction.home_form : prediction.away_form) ?? null : null;
 
         return {
           name,
@@ -77,6 +78,7 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
           opponentCrest: crestByName[opponent] ?? null,
           venue: isHome ? "home" : "away",
           prediction,
+          form,
         };
       }
       return {
@@ -89,6 +91,7 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
         opponentCrest: null,
         venue: null,
         prediction: null,
+        form: null,
       };
     });
 

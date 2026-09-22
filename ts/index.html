@@ -1,387 +1,1059 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Will Manu Win?</title>
-<style>
-  :root {
-    --bg: #0b0f14;
-    --card: #131a22;
-    --card-border: #223040;
-    --text: #e7edf3;
-    --muted: #8ea0b3;
-    --accent: #5eead4;
-    --win: #34d399;
-    --loss: #f87171;
-    --pending: #64748b;
-    --violet: #a78bfa;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    padding: 16px;
-  }
-  header { max-width: 960px; margin: 0 auto 20px; text-align: center; }
-  h1 { font-size: 28px; margin: 0 0 4px; }
-  header p { color: var(--muted); margin: 0; }
-  h2.section-title {
-    max-width: 960px;
-    margin: 40px auto 12px;
-    font-size: 14px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Will Manchester United Win?</title>
+    <style>
+         :root {
+            --bg: #0b0f14;
+            --card: #131a22;
+            --card-border: #223040;
+            --text: #e7edf3;
+            --muted: #8ea0b3;
+            --accent: #5eead4;
+            --win: #34d399;
+            --loss: #f87171;
+            --pending: #64748b;
+            --violet: #a78bfa;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 16px;
+        }
+        
+        header {
+            max-width: 960px;
+            margin: 0 auto 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin: 0 0 4px;
+        }
+        
+        header p {
+            color: var(--muted);
+            margin: 0;
+        }
+        
+        h2.section-title {
+            max-width: 960px;
+            margin: 40px auto 12px;
+            font-size: 14px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        /* ---------- roster ---------- */
+        
+        #pitch-section {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        
+        #roster {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            padding: 14px;
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+        }
+        
+        .pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px 6px 8px;
+            background: #1b2530;
+            border: 1px solid var(--card-border);
+            border-radius: 999px;
+            font-size: 13px;
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.12s, border-color 0.12s;
+        }
+        
+        .pill img {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+        }
+        
+        .pill:hover {
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+        
+        .pill:active {
+            cursor: grabbing;
+        }
+        
+        .pill.dragging {
+            opacity: 0.4;
+        }
+        /* ---------- matchup: two boxes + prediction between ---------- */
+        
+        #matchup {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        @media (max-width: 620px) {
+            #matchup {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .box {
+            position: relative;
+            min-height: 140px;
+            border: 2px dashed var(--card-border);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px;
+            text-align: center;
+            background: var(--card);
+            transition: border-color 0.15s, background 0.15s;
+        }
 
-  /* ---------- roster ---------- */
-  #pitch-section { max-width: 960px; margin: 0 auto; }
-  #roster {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-    padding: 14px;
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-  }
-  .pill {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px 6px 8px;
-    background: #1b2530;
-    border: 1px solid var(--card-border);
-    border-radius: 999px;
-    font-size: 13px;
-    cursor: grab;
-    user-select: none;
-    transition: transform 0.12s, border-color 0.12s;
-  }
-  .pill img { width: 18px; height: 18px; object-fit: contain; }
-  .pill:hover { border-color: var(--accent); transform: translateY(-1px); }
-  .pill:active { cursor: grabbing; }
-  .pill.dragging { opacity: 0.4; }
+        .clear-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid var(--card-border);
+            background: #1b2530;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-  /* ---------- matchup: two boxes + prediction between ---------- */
-  #matchup {
-    margin-top: 16px;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 12px;
-  }
-  @media (max-width: 620px) {
-    #matchup { grid-template-columns: 1fr; }
-  }
-  .box {
-    min-height: 140px;
-    border: 2px dashed var(--card-border);
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 16px;
-    text-align: center;
-    background: var(--card);
-    transition: border-color 0.15s, background 0.15s;
-  }
-  .box.dragover { border-color: var(--accent); background: rgba(94, 234, 212, 0.06); }
-  .box-placeholder { color: var(--muted); font-size: 13px; }
-  .box-crest { width: 56px; height: 56px; object-fit: contain; }
-  .box-crest.placeholder {
-    width: 56px; height: 56px; border-radius: 50%; background: #1b2530;
-    display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 22px;
-  }
-  .box-name { font-weight: 700; font-size: 15px; }
-  .box-venue { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .clear-btn:hover {
+            color: var(--loss);
+            border-color: var(--loss);
+        }
+        
+        .box.dragover {
+            border-color: var(--accent);
+            background: rgba(94, 234, 212, 0.06);
+        }
+        
+        .box-placeholder {
+            color: var(--muted);
+            font-size: 13px;
+        }
+        
+        .box-crest {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+        }
+        
+        .box-crest.placeholder {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #1b2530;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 22px;
+        }
+        
+        .box-name {
+            font-weight: 700;
+            font-size: 15px;
+        }
+        
+        .box-venue {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        #matchup-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            min-width: 90px;
+        }
+        
+        .vs {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 700;
+            letter-spacing: 0.1em;
+        }
+        
+        #prediction-panel {
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        
+        #prediction-panel .score {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        
+        #prediction-panel .pred-sub {
+            margin-top: 2px;
+        }
 
-  #matchup-center { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 90px; }
-  .vs { font-size: 12px; color: var(--muted); font-weight: 700; letter-spacing: 0.1em; }
-  #prediction-panel { text-align: center; font-size: 12px; color: var(--muted); }
-  #prediction-panel .score { font-size: 24px; font-weight: 700; color: var(--text); }
-  #prediction-panel .pred-sub { margin-top: 2px; }
+        #matchup-header {
+            min-height: 20px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--violet);
+            margin-top: 16px;
+            margin-bottom: 4px;
+        }
+        /* ---------- quips: directly under the drop boxes ---------- */
 
-  /* ---------- mood section: bottom gif + quip ---------- */
-  #mood-section {
-    margin-top: 20px;
-    display: flex;
-    gap: 16px;
-    align-items: stretch;
-    flex-wrap: wrap;
-  }
-  #mood-anim, #quip-panel {
-    flex: 1 1 260px;
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    border-radius: 14px;
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 110px;
-  }
+        #quip-panel {
+            margin-top: 10px;
+            padding: 10px 16px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 32px;
+        }
 
-  .fire-badge { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .fire-badge .emoji { font-size: 32px; animation: bounce 1.2s ease-in-out infinite; }
-  @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-  .mood-title { font-weight: 700; font-size: 13px; }
+        /* ---------- mood section: bottom animation ---------- */
 
-  .ball-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .ball {
-    position: relative;
-    width: 64px; height: 64px; border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #cabbf6, #7c5cf0 45%, #2c1c66 100%);
-    box-shadow: 0 0 24px 4px rgba(124, 92, 240, 0.45);
-    display: flex; align-items: center; justify-content: center; font-size: 26px;
-    animation: pulse 2.4s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 18px 2px rgba(124, 92, 240, 0.35); transform: scale(1); }
-    50% { box-shadow: 0 0 30px 8px rgba(124, 92, 240, 0.6); transform: scale(1.04); }
-  }
-  .sparkle { position: absolute; font-size: 12px; opacity: 0; animation: float 2.8s ease-in-out infinite; }
-  .sparkle.s1 { top: -6px; left: -12px; animation-delay: 0s; }
-  .sparkle.s2 { bottom: -4px; right: -14px; animation-delay: 0.9s; }
-  .sparkle.s3 { top: 50%; right: -18px; animation-delay: 1.7s; }
-  @keyframes float {
-    0% { opacity: 0; transform: translateY(4px) scale(0.7); }
-    30% { opacity: 1; }
-    100% { opacity: 0; transform: translateY(-14px) scale(1.1); }
-  }
-  .ball-title { font-weight: 700; color: var(--violet); font-size: 13px; }
+        #mood-section {
+            margin-top: 16px;
+            display: flex;
+        }
 
-  .joke-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .joke-badge {
-    font-size: 26px; width: 64px; height: 64px; border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    background: repeating-linear-gradient(45deg, #3a2f1a, #3a2f1a 10px, #4a3c20 10px, #4a3c20 20px);
-    background-size: 200% 200%; animation: stripes 6s linear infinite;
-    border: 2px dashed #a68a3d;
-  }
-  @keyframes stripes { 0% { background-position: 0 0; } 100% { background-position: 80px 0; } }
-  .joke-title { font-weight: 700; color: #d9b968; font-size: 13px; }
+        #mood-anim {
+            flex: 1 1 auto;
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 110px;
+        }
+        
+        .fire-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
 
-  .mood-empty { color: var(--muted); font-size: 13px; text-align: center; }
+        .fire-badge .emoji {
+            font-size: 32px;
+            animation: bounce 1.2s ease-in-out infinite;
+        }
 
-  .quip-stack { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-  .quip-card { display: flex; align-items: center; gap: 12px; }
-  .quip-card:not(:last-child) { padding-bottom: 10px; border-bottom: 1px dashed var(--card-border); }
-  .quip-text { font-size: 13px; font-style: italic; color: var(--text); }
-  .quip-text strong { font-style: normal; color: var(--muted); }
+        @keyframes bounce {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
+        }
 
-  /* ---------- scoreboard ---------- */
-  #stats { max-width: 960px; margin: 0 auto; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-  .stat {
-    background: var(--card); border: 1px solid var(--card-border); border-radius: 10px;
-    padding: 10px 18px; text-align: center; min-width: 100px;
-  }
-  .stat .n { font-size: 22px; font-weight: 700; }
-  .stat .l { font-size: 12px; color: var(--muted); }
-  main#board { max-width: 960px; margin: 0 auto; }
-  .matchday-heading {
-    font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin: 24px 0 10px;
-  }
-  .fixture {
-    background: var(--card); border: 1px solid var(--card-border); border-radius: 12px;
-    padding: 14px 16px; margin-bottom: 10px; display: grid;
-    grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px;
-  }
-  .side { display: flex; flex-direction: column; gap: 2px; }
-  .side.away { text-align: right; align-items: flex-end; }
-  .team { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 6px; }
-  .side.away .team { flex-direction: row-reverse; }
-  .form { font-size: 11px; color: var(--muted); }
-  .mid { text-align: center; min-width: 120px; }
-  .score { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
-  .predicted { font-size: 11px; color: var(--muted); margin-top: 2px; }
-  .badge {
-    display: inline-block; margin-top: 4px; font-size: 10px; font-weight: 700;
-    letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px;
-  }
-  .badge.correct { background: rgba(52, 211, 153, 0.15); color: var(--win); }
-  .badge.wrong { background: rgba(248, 113, 113, 0.15); color: var(--loss); }
-  .badge.pending { background: rgba(100, 116, 139, 0.15); color: var(--pending); }
-  .reasoning {
-    grid-column: 1 / -1; font-size: 12px; color: var(--muted);
-    border-top: 1px dashed var(--card-border); margin-top: 8px; padding-top: 8px;
-  }
-  #board-empty, #board-loading, #roster-loading { text-align: center; color: var(--muted); }
-  footer { max-width: 960px; margin: 32px auto 0; text-align: center; color: var(--muted); font-size: 12px; }
-  footer a { color: var(--accent); }
-</style>
+        .mood-title {
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .clash-outer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .clash-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            height: 54px;
+        }
+
+        .clash-crest {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+        }
+
+        .clash-crest.left {
+            animation: lunge-left 0.9s ease-in-out infinite;
+        }
+
+        .clash-crest.right {
+            animation: lunge-right 0.9s ease-in-out infinite;
+        }
+
+        @keyframes lunge-left {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            50% { transform: translateX(9px) rotate(-10deg); }
+        }
+
+        @keyframes lunge-right {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            50% { transform: translateX(-9px) rotate(10deg); }
+        }
+
+        .clash-burst {
+            position: absolute;
+            font-size: 22px;
+            animation: burst 0.9s ease-in-out infinite;
+        }
+
+        @keyframes burst {
+            0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.3) rotate(12deg); }
+        }
+        
+        .ball-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ball {
+            position: relative;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #cabbf6, #7c5cf0 45%, #2c1c66 100%);
+            box-shadow: 0 0 24px 4px rgba(124, 92, 240, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            animation: pulse 2.4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%,
+            100% {
+                box-shadow: 0 0 18px 2px rgba(124, 92, 240, 0.35);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 30px 8px rgba(124, 92, 240, 0.6);
+                transform: scale(1.04);
+            }
+        }
+        
+        .sparkle {
+            position: absolute;
+            font-size: 12px;
+            opacity: 0;
+            animation: float 2.8s ease-in-out infinite;
+        }
+        
+        .sparkle.s1 {
+            top: -6px;
+            left: -12px;
+            animation-delay: 0s;
+        }
+        
+        .sparkle.s2 {
+            bottom: -4px;
+            right: -14px;
+            animation-delay: 0.9s;
+        }
+        
+        .sparkle.s3 {
+            top: 50%;
+            right: -18px;
+            animation-delay: 1.7s;
+        }
+        
+        @keyframes float {
+            0% {
+                opacity: 0;
+                transform: translateY(4px) scale(0.7);
+            }
+            30% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-14px) scale(1.1);
+            }
+        }
+        
+        .ball-title {
+            font-weight: 700;
+            color: var(--violet);
+            font-size: 13px;
+        }
+        
+        .joke-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .joke-badge {
+            font-size: 26px;
+            width: 64px;
+            height: 64px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: repeating-linear-gradient(45deg, #3a2f1a, #3a2f1a 10px, #4a3c20 10px, #4a3c20 20px);
+            background-size: 200% 200%;
+            animation: stripes 6s linear infinite;
+            border: 2px dashed #a68a3d;
+        }
+        
+        @keyframes stripes {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 80px 0;
+            }
+        }
+        
+        .joke-title {
+            font-weight: 700;
+            color: #d9b968;
+            font-size: 13px;
+        }
+        
+        .mood-empty {
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+        }
+        
+        .quip-stack {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 20px;
+            width: 100%;
+        }
+
+        @media (max-width: 620px) {
+            .quip-stack {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .quip-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .quip-card:last-child {
+            text-align: right;
+            flex-direction: row-reverse;
+        }
+
+        @media (max-width: 620px) {
+            .quip-card:last-child {
+                text-align: left;
+                flex-direction: row;
+            }
+        }
+
+        .quip-text {
+            min-width: 0;
+            flex: 1 1 auto;
+            font-size: 13px;
+            font-style: italic;
+            color: var(--text);
+        }
+        
+        .quip-text strong {
+            font-style: normal;
+            color: var(--muted);
+        }
+        /* ---------- scoreboard ---------- */
+        
+        #stats {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 10px 18px;
+            text-align: center;
+            min-width: 100px;
+        }
+        
+        .stat .n {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .stat .l {
+            font-size: 12px;
+            color: var(--muted);
+        }
+        
+        main#board {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        
+        .matchday-heading {
+            font-size: 14px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin: 24px 0 10px;
+        }
+        
+        .fixture {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .side {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .side.away {
+            text-align: right;
+            align-items: flex-end;
+        }
+        
+        .team {
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .side.away .team {
+            flex-direction: row-reverse;
+        }
+        
+        .form {
+            font-size: 11px;
+            color: var(--muted);
+        }
+        
+        .mid {
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .score {
+            font-size: 20px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .predicted {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+        
+        .badge {
+            display: inline-block;
+            margin-top: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+        
+        .badge.correct {
+            background: rgba(52, 211, 153, 0.15);
+            color: var(--win);
+        }
+        
+        .badge.wrong {
+            background: rgba(248, 113, 113, 0.15);
+            color: var(--loss);
+        }
+        
+        .badge.pending {
+            background: rgba(100, 116, 139, 0.15);
+            color: var(--pending);
+        }
+        
+        .reasoning {
+            grid-column: 1 / -1;
+            font-size: 12px;
+            color: var(--muted);
+            border-top: 1px dashed var(--card-border);
+            margin-top: 8px;
+            padding-top: 8px;
+        }
+        
+        #board-empty,
+        #board-loading,
+        #roster-loading {
+            text-align: center;
+            color: var(--muted);
+        }
+        
+        footer {
+            max-width: 960px;
+            margin: 32px auto 0;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+        
+        footer a {
+            color: var(--accent);
+        }
+    </style>
 </head>
+
 <body>
-<header>
-  <h1>⚽ Will Manu Win?</h1>
-  <p>Drag a team into a box. A little agent predicts every EPL matchweek and keeps score on itself.</p>
-</header>
+    <header>
+        <h1>⚽ Will Manchester United Win?</h1>
+        <p>Drag a team into a box. A little agent predicts every EPL matchweek and keeps score on itself.</p>
+    </header>
 
-<section id="pitch-section">
-  <div id="roster"><div id="roster-loading">loading the 20 clubs&hellip;</div></div>
+    <section id="pitch-section">
+        <div id="roster">
+            <div id="roster-loading">loading the 20 clubs&hellip;</div>
+        </div>
 
-  <div id="matchup">
-    <div class="box" id="box-a"><div class="box-placeholder">drag a team here</div></div>
-    <div id="matchup-center">
-      <div class="vs">VS</div>
-      <div id="prediction-panel"><span>drop a team to see the call</span></div>
-    </div>
-    <div class="box" id="box-b"><div class="box-placeholder">their opponent shows up here</div></div>
-  </div>
+        <div id="matchup-header"></div>
 
-  <div id="mood-section">
-    <div id="mood-anim"><div class="mood-empty">status shows up here once you drop a team</div></div>
-    <div id="quip-panel"><div class="mood-empty">and their signature quip shows up here</div></div>
-  </div>
-</section>
+        <div id="matchup">
+            <div class="box" id="box-a">
+                <div class="box-placeholder">drag a team here</div>
+            </div>
+            <div id="matchup-center">
+                <div class="vs">VS</div>
+                <div id="prediction-panel"><span>drop a team to see the call</span></div>
+            </div>
+            <div class="box" id="box-b">
+                <div class="box-placeholder">their opponent shows up here</div>
+            </div>
+        </div>
 
-<h2 class="section-title">Season scoreboard</h2>
-<div id="stats"></div>
-<div id="board-loading">loading&hellip;</div>
-<div id="board-empty" style="display:none">No predictions recorded yet. Run the loop, then push.</div>
-<main id="board"></main>
+        <div id="quip-panel">
+            <div class="mood-empty">their signature quips show up here once you drop a team</div>
+        </div>
 
-<footer>
-  data refreshes straight from <a href="https://github.com/prasenjitChak/will_manu_win/blob/main/ts/data/season.json" target="_blank" rel="noopener">season.json</a> and the EPL fixture list on every page load
-</footer>
+        <div id="mood-section">
+            <div id="mood-anim">
+                <div class="mood-empty">status shows up here once you drop a team</div>
+            </div>
+        </div>
+    </section>
 
-<script>
-  const SEASON_URL =
-    "https://raw.githubusercontent.com/prasenjitChak/will_manu_win/main/ts/data/season.json?_=" + Date.now();
-  const RESULT_LABEL = { home_win: "HOME WIN", draw: "DRAW", away_win: "AWAY WIN" };
+    <h2 class="section-title">Season scoreboard</h2>
+    <div id="stats"></div>
+    <div id="board-loading">loading&hellip;</div>
+    <div id="board-empty" style="display:none">No predictions recorded yet. Run the loop, then push.</div>
+    <main id="board"></main>
 
-  const QUIPS = {
-    "Arsenal FC": "Top of the table in October, nowhere to be seen in May. 🏆❓",
-    "Aston Villa FC": "Currently overperforming and mildly suspicious about it.",
-    "Chelsea FC": "Somehow has three new signings since this sentence started.",
-    "Everton FC": "Perpetually ‘rebuilding’. Since 1985.",
-    "Fulham FC": "The nicest mid-table finish in football.",
-    "Liverpool FC": "Either unbeatable or one bad Tuesday away from a crisis. No in-between.",
-    "Manchester City FC": "Wins the league, questions the football gods’ sense of fairness.",
-    "Manchester United FC": "Rebuilding season number… we’ve lost count.",
-    "Newcastle United FC": "Big spending, bigger expectations, biggest ‘wait and see’.",
-    "Sunderland AFC": "Back in the big time and absolutely buzzing about it.",
-    "Tottenham Hotspur FC": "One trophy away from ending the bit. Still waiting.",
-    "Hull City AFC": "Punching above their weight and loving every minute.",
-    "Leeds United FC": "Marching on together, straight into a nail-biter.",
-    "Ipswich Town FC": "The feel-good story nobody saw coming.",
-    "Nottingham Forest FC": "European nights are back, baby.",
-    "Crystal Palace FC": "Chaotic, entertaining, allergic to boring 0-0s.",
-    "Brighton & Hove Albion FC": "Sells its best player every summer, still somehow fine.",
-    "Brentford FC": "Proof that a good spreadsheet beats a big budget.",
-    "AFC Bournemouth": "Quietly good and nobody’s quite sure how.",
-    "Coventry City FC": "The comeback story that keeps on comebacking.",
-  };
+    <footer>
+        data refreshes straight from <a href="https://github.com/prasenjitChak/will_manu_win/blob/main/ts/data/season.json" target="_blank" rel="noopener">season.json</a> and the EPL fixture list on every page load
+    </footer>
 
-  function shortName(name) {
-    return name.replace(/ FC$| AFC$/, "");
-  }
+    <script>
+        const SEASON_URL =
+            "https://raw.githubusercontent.com/prasenjitChak/will_manu_win/main/ts/data/season.json?_=" + Date.now();
+        const RESULT_LABEL = {
+            home_win: "HOME WIN",
+            draw: "DRAW",
+            away_win: "AWAY WIN"
+        };
 
-  function formEmoji(form) {
-    if (!form) return "❓";
-    const letters = form.split("");
-    if (letters.every((c) => c === "W")) return "🔥";
-    if (letters.every((c) => c === "L")) return "🗑️";
-    const score = letters.reduce((s, c) => s + (c === "W" ? 1 : c === "L" ? -1 : 0), 0);
-    const last = letters[letters.length - 1];
-    if (score >= 2) return "😎";
-    if (score <= -2) return "😭";
-    if (last === "L") return "📉";
-    if (last === "W") return "📈";
-    return "😬";
-  }
+        const QUIPS = {
+            "Arsenal FC": [
+                "Top of the table in October, nowhere to be seen in May. 🏆❓",
+                "Has a plan. The plan is vibes.",
+                "One clean sheet away from insufferable.",
+            ],
+            "Aston Villa FC": [
+                "Currently overperforming and mildly suspicious about it.",
+                "Villa Park: where good runs go to get complicated.",
+                "Quietly assembling a top-four heist.",
+            ],
+            "Chelsea FC": [
+                "Somehow has three new signings since this sentence started.",
+                "Squad size: yes.",
+                "A different starting XI every week, on purpose or not.",
+            ],
+            "Everton FC": [
+                "Perpetually ‘rebuilding’. Since 1985.",
+                "Battles relegation for sport at this point.",
+                "The bramley-moore faithful, forever optimistic.",
+            ],
+            "Fulham FC": [
+                "The nicest mid-table finish in football.",
+                "Nobody's rival, everybody's respectable draw.",
+                "Nine points from safety, nine from Europe. Comfortable.",
+            ],
+            "Liverpool FC": [
+                "Either unbeatable or one bad Tuesday away from a crisis. No in-between.",
+                "Anfield on a European night: still undefeated in atmosphere.",
+                "Somehow both the favourite and the underdog.",
+            ],
+            "Manchester City FC": [
+                "Wins the league, questions the football gods’ sense of fairness.",
+                "Passes the ball 400 times before lunch.",
+                "The other 19 clubs' shared final boss.",
+            ],
+            "Manchester United FC": [
+                "Rebuilding season number… we’ve lost count.",
+                "New manager, same script.",
+                "Occasionally world-beating, mostly world-bewildering.",
+            ],
+            "Newcastle United FC": [
+                "Big spending, bigger expectations, biggest ‘wait and see’.",
+                "Roared back, still finding its outside voice.",
+                "St James' Park: loud on matchday, louder in the transfer window.",
+            ],
+            "Sunderland AFC": [
+                "Back in the big time and absolutely buzzing about it.",
+                "Promoted and refusing to act like it.",
+                "The Stadium of Light living up to its name again.",
+            ],
+            "Tottenham Hotspur FC": [
+                "One trophy away from ending the bit. Still waiting.",
+                "Spursy, but make it a brand.",
+                "Champions League form on a League Cup budget of luck.",
+            ],
+            "Hull City AFC": [
+                "Punching above their weight and loving every minute.",
+                "The Tigers, biting harder than expected.",
+                "Underdogs who forgot to read the script.",
+            ],
+            "Leeds United FC": [
+                "Marching on together, straight into a nail-biter.",
+                "Elland Road: noisy neighbours to everyone in the division.",
+                "Promoted with chaos, staying with more chaos.",
+            ],
+            "Ipswich Town FC": [
+                "The feel-good story nobody saw coming.",
+                "Portman Road's quietly having the best time.",
+                "Overachieving and thoroughly enjoying it.",
+            ],
+            "Nottingham Forest FC": [
+                "European nights are back, baby.",
+                "The City Ground remembers how to host a big one.",
+                "Forest, forever two results from a headline.",
+            ],
+            "Crystal Palace FC": [
+                "Chaotic, entertaining, allergic to boring 0-0s.",
+                "Selhurst Park: guaranteed goals, guaranteed chaos.",
+                "Nobody's easy Saturday out.",
+            ],
+            "Brighton & Hove Albion FC": [
+                "Sells its best player every summer, still somehow fine.",
+                "The league's favourite moneyball case study.",
+                "Loses a star, finds two more nobody's heard of yet.",
+            ],
+            "Brentford FC": [
+                "Proof that a good spreadsheet beats a big budget.",
+                "Set-piece merchants and proud of it.",
+                "Punching above budget, every single season.",
+            ],
+            "AFC Bournemouth": [
+                "Quietly good and nobody’s quite sure how.",
+                "The south coast's best-kept overperformer.",
+                "Solid, unbothered, criminally underrated.",
+            ],
+            "Coventry City FC": [
+                "The comeback story that keeps on comebacking.",
+                "The Sky Blues, allergic to a quiet season.",
+                "Somehow always in the middle of a plot twist.",
+            ],
+        };
 
-  function fmtDate(iso) {
-    return new Date(iso + "T00:00:00Z").toLocaleDateString(undefined, { month: "short", day: "numeric" });
-  }
+        function pickQuip(name) {
+            const lines = QUIPS[name];
+            if (!lines) return "This club hasn't earned a one-liner yet.";
+            return lines[Math.floor(Math.random() * lines.length)];
+        }
 
-  function crestImg(url, size) {
-    return url
-      ? `<img src="${url}" alt="" style="width:${size}px;height:${size}px;object-fit:contain" onerror="this.style.display='none'" />`
-      : "";
-  }
+        function shortName(name) {
+            return name.replace(/ FC$| AFC$/, "");
+        }
 
-  // ---------------- pitch: roster + two-box matchup ----------------
-  let TEAMS = [];
-  const slots = { a: null, b: null };
-  let focusTeam = null;
+        function formEmoji(form) {
+            if (!form) return "❓";
+            const letters = form.split("");
+            if (letters.every((c) => c === "W")) return "🔥";
+            if (letters.every((c) => c === "L")) return "🗑️";
+            const score = letters.reduce((s, c) => s + (c === "W" ? 1 : c === "L" ? -1 : 0), 0);
+            const last = letters[letters.length - 1];
+            if (score >= 2) return "😎";
+            if (score <= -2) return "😭";
+            if (last === "L") return "📉";
+            if (last === "W") return "📈";
+            return "😬";
+        }
 
-  function renderRoster() {
-    const el = document.getElementById("roster");
-    el.innerHTML = TEAMS.map(
-      (t) => `<div class="pill" draggable="true" data-team="${t.name}">${crestImg(t.crest, 18)}<span>${shortName(t.name)}</span></div>`,
-    ).join("");
+        function fmtDate(iso) {
+            return new Date(iso + "T00:00:00Z").toLocaleDateString(undefined, {
+                month: "short",
+                day: "numeric"
+            });
+        }
 
-    el.querySelectorAll(".pill").forEach((pill) => {
-      pill.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData("text/plain", pill.dataset.team);
-        pill.classList.add("dragging");
-      });
-      pill.addEventListener("dragend", () => pill.classList.remove("dragging"));
-      pill.addEventListener("click", () => dropInto("a", pill.dataset.team));
-    });
-  }
+        function crestImg(url, size) {
+            return url ?
+                `<img src="${url}" alt="" style="width:${size}px;height:${size}px;object-fit:contain" onerror="this.style.display='none'" />` :
+                "";
+        }
 
-  function dropInto(slot, teamName) {
-    const t = TEAMS.find((x) => x.name === teamName);
-    if (!t) return;
-    const other = slot === "a" ? "b" : "a";
-    slots[slot] = { ...t, venue: t.venue };
-    slots[other] = t.opponent ? { name: t.opponent, crest: t.opponentCrest, venue: t.venue === "home" ? "away" : "home" } : null;
-    focusTeam = t;
-    renderMatchup();
-    renderMood();
-  }
+        function crestImgClass(url, size, cls) {
+            return url
+                ? `<img class="${cls}" src="${url}" alt="" style="width:${size}px;height:${size}px;object-fit:contain" onerror="this.style.display='none'" />`
+                : `<div class="${cls}" style="width:${size}px;height:${size}px;border-radius:50%;background:#1b2530;display:flex;align-items:center;justify-content:center;color:var(--muted)">?</div>`;
+        }
 
-  function renderBox(slot) {
-    const el = document.getElementById("box-" + slot);
-    const t = slots[slot];
-    if (!t) {
-      el.innerHTML = `<div class="box-placeholder">${slot === "a" ? "drag a team here" : "their opponent shows up here"}</div>`;
-      return;
-    }
-    el.innerHTML = `
+        const CLASH_LINES = [
+            "Kickoff loading… try not to blink 😅",
+            "Two sides enter, one bragging right leaves.",
+            "Neither team is backing down this week.",
+            "This week's collision course.",
+        ];
+
+        // ---------------- pitch: roster + two-box matchup ----------------
+        let TEAMS = [];
+        const slots = {
+            a: null,
+            b: null
+        }; // team NAMES, resolved against TEAMS at render time
+        let lastDropped = null;
+
+        const HYPOTHETICAL_LINES = [
+            "🎰 Feeling lucky…",
+            "🕵️ Trying to game the system…",
+            "✈️ This one's headed straight to Vegas…",
+            "🧮 Purely hypothetical, but here's the maths…",
+            "🎲 Not on the fixture list, but let's roll the dice…",
+        ];
+
+        function findTeam(name) {
+            return name ? TEAMS.find((x) => x.name === name) ?? null : null;
+        }
+
+        function isRealFixture(a, b) {
+            return !!a && !!b && (a.opponent === b.name || b.opponent === a.name);
+        }
+
+        function heuristicPrediction(formA, formB) {
+            const pts = (form) => form.split("").reduce((s, c) => s + (c === "W" ? 3 : c === "D" ? 1 : 0), 0);
+            const diff = pts(formA) - pts(formB);
+            if (Math.abs(diff) <= 1) return {
+                scoreA: 1,
+                scoreB: 1
+            };
+            if (diff > 0) return {
+                scoreA: Math.min(4, 1 + Math.floor(diff / 3)),
+                scoreB: Math.max(0, Math.floor(diff / 6))
+            };
+            return {
+                scoreA: Math.max(0, Math.floor(-diff / 6)),
+                scoreB: Math.min(4, 1 + Math.floor(-diff / 3))
+            };
+        }
+
+        function renderRoster() {
+            const el = document.getElementById("roster");
+            el.innerHTML = TEAMS.map(
+                (t) => `<div class="pill" draggable="true" data-team="${t.name}">${crestImg(t.crest, 18)}<span>${shortName(t.name)}</span></div>`,
+            ).join("");
+
+            el.querySelectorAll(".pill").forEach((pill) => {
+                pill.addEventListener("dragstart", (e) => {
+                    e.dataTransfer.setData("text/plain", pill.dataset.team);
+                    pill.classList.add("dragging");
+                });
+                pill.addEventListener("dragend", () => pill.classList.remove("dragging"));
+                pill.addEventListener("click", () => dropInto("a", pill.dataset.team));
+            });
+        }
+
+        function dropInto(slot, teamName) {
+            const other = slot === "a" ? "b" : "a";
+            if (slots[other] === teamName) return; // same team can't be on both sides
+            slots[slot] = teamName;
+            if (!slots[other]) {
+                const t = findTeam(teamName);
+                if (t && t.opponent) slots[other] = t.opponent;
+            }
+            lastDropped = teamName;
+            renderMatchup();
+            renderMood();
+        }
+
+        function clearSlot(slot) {
+            slots[slot] = null;
+            renderMatchup();
+            renderMood();
+        }
+
+        function renderBox(slot, t, showVenue) {
+            const el = document.getElementById("box-" + slot);
+            if (!t) {
+                el.innerHTML = `<div class="box-placeholder">${slot === "a" ? "drag a team here" : "their opponent shows up here"}</div>`;
+                return;
+            }
+            el.innerHTML = `
+      <button class="clear-btn" type="button" aria-label="clear">×</button>
       ${t.crest ? crestImg(t.crest, 56) : `<div class="box-crest placeholder">?</div>`}
       <div class="box-name">${shortName(t.name)}</div>
-      ${t.venue ? `<div class="box-venue">${t.venue}</div>` : ""}
+      ${showVenue && t.venue ? `<div class="box-venue">${t.venue}</div>` : ""}
     `;
+    el.querySelector(".clear-btn").addEventListener("click", () => clearSlot(slot));
   }
 
   function renderMatchup() {
-    renderBox("a");
-    renderBox("b");
+    const a = findTeam(slots.a);
+    const b = findTeam(slots.b);
+    const real = isRealFixture(a, b);
+    renderBox("a", a, real);
+    renderBox("b", b, real);
+
     const panel = document.getElementById("prediction-panel");
-    const t = focusTeam;
-    if (!t || t.status === "none") {
-      panel.innerHTML = `<span>no fixture in the next few weeks</span>`;
+    const header = document.getElementById("matchup-header");
+
+    if (!a && !b) {
+      header.textContent = "";
+      panel.innerHTML = `<span>drop a team to see the call</span>`;
       return;
     }
-    const p = t.prediction;
-    if (p) {
-      panel.innerHTML = `
-        <div class="score">${p.predicted_score ?? RESULT_LABEL[p.predicted_result]}</div>
-        <div class="pred-sub">predicted ${RESULT_LABEL[p.predicted_result]}${
-          p.actual_result ? ` &middot; actual ${p.actual_home_score}-${p.actual_away_score} ${p.correct ? "✅" : "❌"}` : ""
-        }</div>`;
-    } else {
-      panel.innerHTML = `<span>matchday ${t.matchday} &middot; ${fmtDate(t.date)}<br />🤔 the agent hasn't called this one yet</span>`;
+    if (!a || !b) {
+      header.textContent = "";
+      panel.innerHTML = `<span>drop a second team to compare</span>`;
+      return;
     }
+
+    if (real) {
+      header.textContent = "";
+      const p = a.prediction ?? b.prediction;
+      const matchday = a.matchday ?? b.matchday;
+      const date = a.date ?? b.date;
+      if (!p) {
+        panel.innerHTML = `<span>matchday ${matchday} &middot; ${fmtDate(date)}<br />🤔 the agent hasn't called this one yet</span>`;
+        return;
+      }
+
+      // p.home/p.away are the REAL fixture's home/away teams, which may not match the
+      // left(a)/right(b) box order the user dropped them into — reorient before showing.
+      const leftIsHome = p.home === a.name;
+      const winnerName = p.predicted_result === "draw" ? null : p.predicted_result === "home_win" ? p.home : p.away;
+
+      let scoreDisplay = p.predicted_score;
+      if (scoreDisplay && !leftIsHome) {
+        const parts = scoreDisplay.split("-").map((s) => s.trim());
+        if (parts.length === 2) scoreDisplay = `${parts[1]}-${parts[0]}`;
+      }
+      const shortResult = winnerName ? `${shortName(winnerName)} predicted to win` : "predicted draw";
+
+      let actualLine = "";
+      if (p.actual_result) {
+        const leftActual = leftIsHome ? p.actual_home_score : p.actual_away_score;
+        const rightActual = leftIsHome ? p.actual_away_score : p.actual_home_score;
+        actualLine = ` &middot; actual ${leftActual}-${rightActual} ${p.correct ? "✅" : "❌"}`;
+      }
+
+      panel.innerHTML = `
+        <div class="score">${scoreDisplay ?? (winnerName ? shortName(winnerName).toUpperCase() : "DRAW")}</div>
+        <div class="pred-sub">${shortResult}${actualLine}</div>`;
+      return;
+    }
+
+    // hypothetical matchup — two teams not actually playing each other
+    header.textContent = HYPOTHETICAL_LINES[Math.floor(Math.random() * HYPOTHETICAL_LINES.length)];
+    if (!a.form || !b.form) {
+      panel.innerHTML = `<span>not enough recent form on record for this pairing yet</span>`;
+      return;
+    }
+    const h = heuristicPrediction(a.form, b.form);
+    panel.innerHTML = `
+      <div class="score">${h.scoreA} – ${h.scoreB}</div>
+      <div class="pred-sub">quick form-based guess, not a full agent call</div>`;
   }
 
   function renderMood() {
     const anim = document.getElementById("mood-anim");
     const quip = document.getElementById("quip-panel");
-    const t = focusTeam;
+    const t = findTeam(lastDropped);
     if (!t) return;
 
     if (t.status === "this_week") {
-      anim.innerHTML = `<div class="fire-badge"><div class="emoji">🔥</div><div class="mood-title">This week's fixture!</div></div>`;
+      const a = findTeam(slots.a);
+      const b = findTeam(slots.b);
+      const line = CLASH_LINES[Math.floor(Math.random() * CLASH_LINES.length)];
+      anim.innerHTML = `
+        <div class="clash-outer">
+          <div class="clash-wrap">
+            ${crestImgClass(a?.crest, 44, "clash-crest left")}
+            <span class="clash-burst">💥</span>
+            ${crestImgClass(b?.crest, 44, "clash-crest right")}
+          </div>
+          <div class="mood-title">${line}</div>
+        </div>`;
     } else if (t.status === "next_3") {
       anim.innerHTML = `
         <div class="ball-wrap">
@@ -400,12 +1072,10 @@
       team
         ? `<div class="quip-card">
             ${crestImg(team.crest, 34)}
-            <div class="quip-text"><strong>${shortName(team.name)}:</strong> &ldquo;${
-              QUIPS[team.name] ?? "This club hasn't earned a one-liner yet."
-            }&rdquo;</div>
+            <div class="quip-text">&ldquo;${pickQuip(team.name)}&rdquo;</div>
           </div>`
         : "";
-    quip.innerHTML = `<div class="quip-stack">${quipCard(slots.a)}${quipCard(slots.b)}</div>`;
+    quip.innerHTML = `<div class="quip-stack">${quipCard(findTeam(slots.a))}${quipCard(findTeam(slots.b))}</div>`;
   }
 
   ["a", "b"].forEach((slot) => {
@@ -498,6 +1168,7 @@
     .catch((e) => {
       document.getElementById("board-loading").textContent = "couldn't load season.json: " + e.message;
     });
-</script>
+    </script>
 </body>
+
 </html>
