@@ -29,18 +29,6 @@
       "reasoning": "Arsenal have won four of five (only slip 0-3 at Brighton) and are rested; Leeds are unbeaten-ish but draw-heavy (three draws in five) and offer little away threat.",
       "predicted_at": "2026-09-22T18:09:43.170Z"
     },
-    "md6-sunderland-afc-brighton-amp-hove-albion-fc": {
-      "matchday": 6,
-      "date": "2026-10-10",
-      "home": "Sunderland AFC",
-      "away": "Brighton &amp; Hove Albion FC",
-      "predicted_result": "away_win",
-      "predicted_score": "1-2",
-      "home_form": "LWDLL",
-      "away_form": "WLDWW",
-      "reasoning": "Brighton come in on back-to-back wins including 3-0 over Arsenal; Sunderland have lost three of their last four and shipped five at Man City.",
-      "predicted_at": "2026-09-22T18:09:43.173Z"
-    },
     "md6-chelsea-fc-afc-bournemouth": {
       "matchday": 6,
       "date": "2026-10-10",
@@ -306,6 +294,18 @@
       "actual_result": "draw",
       "correct": false,
       "scored_at": "2026-09-22T18:57:14.662Z"
+    },
+    "md6-sunderland-afc-brighton-hove-albion-fc": {
+      "matchday": 6,
+      "date": "2026-10-10",
+      "home": "Sunderland AFC",
+      "away": "Brighton & Hove Albion FC",
+      "predicted_result": "away_win",
+      "predicted_score": "1-2",
+      "home_form": "LWDLL",
+      "away_form": "WLDWW",
+      "reasoning": "Brighton come in on back-to-back wins including 3-0 over Arsenal; Sunderland have lost three of their last four and shipped five at Man City.",
+      "predicted_at": "2026-09-22T18:09:43.173Z"
     }
   }
 }

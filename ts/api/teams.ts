@@ -18,7 +18,15 @@ async function footballData(pathname: string): Promise<any> {
 }
 
 function fixtureKey(matchday: number, home: string, away: string): string {
-  const slug = (s: string) => s.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  // team names sometimes arrive HTML-escaped (e.g. "Brighton &amp; Hove Albion FC") — decode
+  // before slugifying so the key matches regardless of which form the caller used.
+  const slug = (s: string) =>
+    s
+      .replace(/&amp;/gi, "&")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
   return `md${matchday}-${slug(home)}-${slug(away)}`;
 }
 
