@@ -1,0 +1,21 @@
+{
+  "fixtures": {
+    "md3-arsenal-fc-chelsea-fc": {
+      "matchday": 3,
+      "date": "2026-09-06",
+      "home": "Arsenal FC",
+      "away": "Chelsea FC",
+      "predicted_result": "home_win",
+      "predicted_score": "2-1",
+      "home_form": "WW",
+      "away_form": "WW",
+      "reasoning": "Both sides unbeaten (WW) and fully rested with no midweek games, but Arsenal have the home edge and a much tighter defence (3-0 and 1-0 wins) while Chelsea have shipped goals in both matches (3-2, 4-3). No prior EPL head-to-head data available.",
+      "predicted_at": "2026-09-22T17:43:12.059Z",
+      "actual_home_score": 2,
+      "actual_away_score": 1,
+      "actual_result": "home_win",
+      "correct": true,
+      "scored_at": "2026-09-22T17:43:14.251Z"
+    }
+  }
+}

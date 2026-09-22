@@ -3,9 +3,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import type Anthropic from "@anthropic-ai/sdk";
-import { RUNS_DIR } from "./env";
+import { RUNS_DIR, here } from "./env";
 
 const MEMORY = path.join(RUNS_DIR, "memory.json");
+// Tracked in git (unlike runs/, which is gitignored) so the scoreboard page can read it
+// straight from GitHub. The loop writes here, you commit and push, the page picks it up.
+const SEASON = path.join(here, "..", "data", "season.json");
 
 export function getTime(): string {
   return new Date().toISOString();
@@ -30,6 +33,117 @@ export function recall({ key }: { key: string }): string {
 
 function load(): Record<string, string> {
   return fs.existsSync(MEMORY) ? JSON.parse(fs.readFileSync(MEMORY, "utf8")) : {};
+}
+
+type Fixture = {
+  matchday: number;
+  date: string;
+  home: string;
+  away: string;
+  home_form?: string;
+  away_form?: string;
+  predicted_result?: "home_win" | "draw" | "away_win";
+  predicted_score?: string;
+  reasoning?: string;
+  predicted_at?: string;
+  actual_home_score?: number;
+  actual_away_score?: number;
+  actual_result?: "home_win" | "draw" | "away_win";
+  correct?: boolean;
+  scored_at?: string;
+};
+
+function fixtureKey(matchday: number, home: string, away: string): string {
+  const slug = (s: string) => s.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  return `md${matchday}-${slug(home)}-${slug(away)}`;
+}
+
+function loadSeason(): Record<string, Fixture> {
+  return fs.existsSync(SEASON) ? JSON.parse(fs.readFileSync(SEASON, "utf8")).fixtures ?? {} : {};
+}
+
+function saveSeason(fixtures: Record<string, Fixture>): void {
+  fs.mkdirSync(path.dirname(SEASON), { recursive: true });
+  fs.writeFileSync(SEASON, JSON.stringify({ fixtures }, null, 2));
+}
+
+export function recordPrediction({
+  matchday,
+  date,
+  home,
+  away,
+  predicted_result,
+  predicted_score,
+  home_form,
+  away_form,
+  reasoning,
+}: {
+  matchday: number;
+  date: string;
+  home: string;
+  away: string;
+  predicted_result: "home_win" | "draw" | "away_win";
+  predicted_score?: string;
+  home_form?: string;
+  away_form?: string;
+  reasoning?: string;
+}): string {
+  const fixtures = loadSeason();
+  const key = fixtureKey(matchday, home, away);
+  fixtures[key] = {
+    ...fixtures[key],
+    matchday,
+    date,
+    home,
+    away,
+    predicted_result,
+    predicted_score,
+    home_form,
+    away_form,
+    reasoning,
+    predicted_at: new Date().toISOString(),
+  };
+  saveSeason(fixtures);
+  return `recorded prediction ${key}: ${predicted_result}${predicted_score ? ` (${predicted_score})` : ""}`;
+}
+
+export function recordResult({
+  matchday,
+  home,
+  away,
+  actual_home_score,
+  actual_away_score,
+}: {
+  matchday: number;
+  home: string;
+  away: string;
+  actual_home_score: number;
+  actual_away_score: number;
+}): string {
+  const fixtures = loadSeason();
+  const key = fixtureKey(matchday, home, away);
+  const fixture = fixtures[key];
+  if (!fixture || !fixture.predicted_result) {
+    return `no prior prediction found for ${key} — call record_prediction first, or check matchday/home/away spelling.`;
+  }
+  const actual_result: Fixture["actual_result"] =
+    actual_home_score > actual_away_score ? "home_win" : actual_home_score < actual_away_score ? "away_win" : "draw";
+  fixture.actual_home_score = actual_home_score;
+  fixture.actual_away_score = actual_away_score;
+  fixture.actual_result = actual_result;
+  fixture.correct = actual_result === fixture.predicted_result;
+  fixture.scored_at = new Date().toISOString();
+  saveSeason(fixtures);
+  return (
+    `recorded result ${key}: ${actual_home_score}-${actual_away_score} (${actual_result}). ` +
+    `Prediction was ${fixture.predicted_result} — ${fixture.correct ? "correct" : "wrong"}.`
+  );
+}
+
+export function getSeasonState({ matchday }: { matchday?: number }): string {
+  const fixtures = Object.values(loadSeason()).filter((f) => matchday === undefined || f.matchday === matchday);
+  if (fixtures.length === 0) return matchday === undefined ? "no fixtures recorded yet." : `no fixtures recorded for matchday ${matchday}.`;
+  return JSON.stringify(fixtures, null, 2);
 }
 
 // Free-tier football-data.org caps at 10 requests/minute. A matchday-wide run makes many
@@ -260,6 +374,9 @@ export const HANDLERS: Record<string, Handler> = {
   recall,
   get_team_data: getTeamData,
   get_matchday_fixtures: getMatchdayFixtures,
+  record_prediction: recordPrediction,
+  record_result: recordResult,
+  get_season_state: getSeasonState,
 };
 
 // the description is the only thing the model reads when deciding to call a tool. write it for the model.
@@ -328,6 +445,57 @@ export const SCHEMAS: Anthropic.Tool[] = [
           type: "string",
           description: "Optional filter: SCHEDULED, TIMED, FINISHED, POSTPONED, or IN_PLAY.",
         },
+      },
+    },
+  },
+  {
+    name: "record_prediction",
+    description:
+      "Save a match prediction to the tracked season scoreboard (data/season.json), keyed by matchday+home+away. " +
+      "Call this once per fixture after predicting it, in matchday-batch tasks and single-match tasks alike — " +
+      "the scoreboard page reads from here, not from remember/recall.",
+    input_schema: {
+      type: "object",
+      properties: {
+        matchday: { type: "number", description: "EPL matchday number, 1-38." },
+        date: { type: "string", description: "ISO date (YYYY-MM-DD) of the match." },
+        home: { type: "string", description: "Home team name." },
+        away: { type: "string", description: "Away team name." },
+        predicted_result: { type: "string", enum: ["home_win", "draw", "away_win"] },
+        predicted_score: { type: "string", description: "Optional predicted scoreline, e.g. '2-1'." },
+        home_form: { type: "string", description: "Optional W/D/L letters for the home team, oldest to newest, as returned by get_team_data." },
+        away_form: { type: "string", description: "Optional W/D/L letters for the away team, oldest to newest, as returned by get_team_data." },
+        reasoning: { type: "string", description: "One or two sentences on why, for display on the scoreboard." },
+      },
+      required: ["matchday", "date", "home", "away", "predicted_result"],
+    },
+  },
+  {
+    name: "record_result",
+    description:
+      "Save a match's actual score against an existing prediction (matchday+home+away must already have one " +
+      "from record_prediction). Computes and stores whether the prediction was correct.",
+    input_schema: {
+      type: "object",
+      properties: {
+        matchday: { type: "number", description: "EPL matchday number, 1-38." },
+        home: { type: "string", description: "Home team name, matching what record_prediction used." },
+        away: { type: "string", description: "Away team name, matching what record_prediction used." },
+        actual_home_score: { type: "number" },
+        actual_away_score: { type: "number" },
+      },
+      required: ["matchday", "home", "away", "actual_home_score", "actual_away_score"],
+    },
+  },
+  {
+    name: "get_season_state",
+    description:
+      "Read back recorded fixtures from the season scoreboard, optionally filtered to one matchday. Use this " +
+      "to check what's already been predicted or scored before redoing work, or to review recent accuracy.",
+    input_schema: {
+      type: "object",
+      properties: {
+        matchday: { type: "number", description: "Optional. Omit to get every recorded fixture all season." },
       },
     },
   },
